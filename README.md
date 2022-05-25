@@ -27,8 +27,19 @@ Drift compensation, Black: ```-Ib```, White: ```-Iw```, Both: ```-Ibw```
 ## Argyll Commands
 
 ```
-dispcal -v -t 6503.51 -Ibw -H -Q 2012_2 -o argyll-horiz-05-11T14:56
+dispcal -X ccxxdpt94-horiz-05-16T16:14.ccmx -v -t 6503.51 -Ibw -H -Q 2012_2 -o argyll-horiz-05-16T16:28
 ```
 
 ## monitor rgb
 Vertical: 99 96 97q
+
+
+
+
+## CCXX
+
+```
+ccxxmake -t l -v -H -o 2012_2 ccxxdpt94-05-16T16:14.ccmx
+```
+
+date +%F_%T   
