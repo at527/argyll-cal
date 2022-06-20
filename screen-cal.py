@@ -1,19 +1,88 @@
 import subprocess
+from datetime import datetime
+from threading import Thread
 
-def getDate():
-    pass
+def stringDateTime():
+    dt = datetime.now()
+    dstr = dt.strftime("%m-%d_%H:%M")
+    return dstr
 
+# run dispwin to get availble monitors
+# returns list of tuples(display number, description)
 def getMonitor():
-    pass
+    monitors = []
+    runner = subprocess.run(["dispwin", "-?"], 
+            capture_output=True)
 
-def extractMonitorOpts():
-    pass
+    err = runner.stderr
+    decodeError = err.decode()
+    split = decodeError.splitlines()
+    for i in range(len(split)):
+        split[i] = split[i].strip()
 
-def genCommand():
-    pass
+    finishedMonitors =  False
+    i = 8
+    while not finishedMonitors:
+        monitors.append(split[i])
+        i+=1
+        if "-dweb[:port]" in split[i]:
+            finishedMonitors = True
+
+    # # convert to list of tuples
+    # for i in range(len(monitors)):
+    #     split = monitors[i].split("=")
+    #     for s in range(len(split)):
+    #         split[s] = split[s].strip()
+    #     monitors[i] = (split[0], split[1])
+
+    return monitors
+
+# select monitor
+
+# assign alias to monitor
+
+def printAvailMonitors():
+    print("Available Monitors: ")
+    monitors = getMonitor()
+    for i in monitors:
+        print(i)
+
+# ask user for monitor selection
+# return list[monitor number, alias]
+def selectMonitor():
+    confirmed = False
+    while not confirmed: 
+        monitor = input("Select Monitor Number: ")
+        try: 
+            subprocess.run(["dispwin", "-d", monitor], 
+                            stderr=subprocess.DEVNULL, 
+                            timeout=1)
+        except:
+            pass
+
+        confirm = input("Confirm selection (y/n): ")
+        if confirm == "y":
+            confirmed = True
+        
+    alias = input("Alias for Monitor: ")
+    return [monitor, alias]
+
+def genID(dispAlias):
+    id = stringDateTime() + "-" + dispAlias
+    return id
+
+def genCommand(dispNum, dispAlias):
+    
+    call = ["dispcal", "-v", "-w", "0.3127,0.3290", "-Ibw", "-H", "-P", "0.5,0.5,2.0", 
+            "-d", dispNum, "-o", genID(dispAlias)]
+
+    subprocess.run(call)
 
 def main():
-    return
+    printAvailMonitors()
+    monitorInfo = selectMonitor()
+    genCommand(monitorInfo[0], monitorInfo[1])
+
 
 if __name__ == "__main__":
     main()
