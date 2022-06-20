@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
+
 import subprocess
 from datetime import datetime
-from threading import Thread
 
 def stringDateTime():
     dt = datetime.now()
@@ -72,16 +73,25 @@ def genID(dispAlias):
     return id
 
 def genCommand(dispNum, dispAlias):
-    
     call = ["dispcal", "-v", "-w", "0.3127,0.3290", "-Ibw", "-H", "-P", "0.5,0.5,2.0", 
             "-d", dispNum, "-o", genID(dispAlias)]
+    return call
 
-    subprocess.run(call)
+def confirmCall(call):
+    print("Generated call: ")
+    print(call)
+    confirm = input("Confirm call (y/n): ")
+    if confirm == "y":
+        return True
+    else:
+        return False
 
 def main():
     printAvailMonitors()
     monitorInfo = selectMonitor()
-    genCommand(monitorInfo[0], monitorInfo[1])
+    call = genCommand(monitorInfo[0], monitorInfo[1])
+    if confirmCall(call) == True:
+        subprocess.run(call)
 
 
 if __name__ == "__main__":
