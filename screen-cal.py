@@ -2,6 +2,7 @@
 
 import subprocess
 from datetime import datetime
+import argparse
 
 def stringDateTime():
     dt = datetime.now()
@@ -50,6 +51,7 @@ def printAvailMonitors():
 
 # ask user for monitor selection
 # return list[monitor number, alias]
+# TODO split into separate number and alias functions for cases where alias isn't needed
 def selectMonitor():
     confirmed = False
     while not confirmed: 
@@ -86,12 +88,36 @@ def confirmCall(call):
     else:
         return False
 
-def main():
+def genUpdateCall(fileName, displayNum):
+    call = ["dispcal", "-v", "-w", "0.3127,0.3290", "-Ibw", "-H", "-P", "0.5,0.5,2.0", 
+            "-d", displayNum, "-u", "-o", fileName]
+    return call
+
+def newCalibration():
     printAvailMonitors()
     monitorInfo = selectMonitor()
     call = genCommand(monitorInfo[0], monitorInfo[1])
     if confirmCall(call) == True:
         subprocess.run(call)
+
+def updateCalibration():
+    filename = input("File to update: ")
+    printAvailMonitors()
+    monitorInfo = selectMonitor()
+    call = genUpdateCall(filename, monitorInfo[0])
+    if confirmCall(call) == True:
+        subprocess.run(call)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--update', action="store_true")
+    args = parser.parse_args()
+    if args.update == False:
+        newCalibration()
+    else:
+        updateCalibration()
+
+
 
 
 if __name__ == "__main__":
